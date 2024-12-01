@@ -19,6 +19,7 @@ package salesforce
 
 // Import standard packages.
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -119,5 +120,40 @@ func Query(soql string) []byte {
 	response.Body.Close()
 
 	return body
+
+}
+
+/*
+ *	Create
+ *	@since	1.0.1
+ */
+func Create(object string, data map[string]interface{}) (string, error) {
+
+	jsonData, _ := json.Marshal(data)
+
+	request, _ := http.NewRequest(
+		http.MethodPost,
+		fmt.Sprintf("https://%s.my.salesforce.com/services/data/%s/sobjects/%s/", MyDomain, ApiVersion, object),
+		bytes.NewBuffer(jsonData),
+	)
+
+	request.Header.Add("Authorization", OAuth2AccessToken)
+	request.Header.Add("Content-Type", "application/json; charset=UTF-8")
+
+	response, _ := (&http.Client{}).Do(request)
+
+	body, _ := io.ReadAll(response.Body)
+
+	var query struct {
+		// 200 OK
+		Id      string `json:"id"`
+		Success bool
+	}
+
+	json.NewDecoder(bytes.NewReader(body)).Decode(&query)
+
+	response.Body.Close()
+
+	return query.Id, nil
 
 }
