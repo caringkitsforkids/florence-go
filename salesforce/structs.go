@@ -36,6 +36,6 @@ type Product2 struct {
 }
 
 type KitItem__c struct {
-	Product  Product `json:"Product__r"`  // The Product in the kit.
+	Product  Product2 `json:"Product__r"`  // The Product in the kit.
 	Quantity float32 `json:"Quantity__c"` // The Quantity (Number) of the Product in the kit. E.g. 2 x Long sleeve baby grow (0-3 months).
 }
